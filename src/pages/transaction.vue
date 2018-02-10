@@ -15,6 +15,12 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="产品期数">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.prod_period }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="投资人姓名">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.investor_name }}</span>
@@ -27,15 +33,39 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="证件类型">
+        label="认购份额类型">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.investor_id_type }}</span>
+          <span style="margin-left: 10px">{{ scope.row.prod_class }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="证件号码">
+        label="投资金额">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.investor_id }}</span>
+          <span style="margin-left: 10px">{{ scope.row.amount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="认购日期">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.invest_date }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="分公司" width="170px">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.company }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="理财师">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.advisor_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="最近一次修改时间" width="170px">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.update_time }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" header-align="center" width="150px">
