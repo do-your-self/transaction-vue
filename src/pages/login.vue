@@ -123,6 +123,7 @@ export default {
   width:100%;
   font-size:20px;
   margin:0!important;
+  padding:0!important;
 }
 .login {
   position: relative;

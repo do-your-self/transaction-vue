@@ -41,7 +41,7 @@
     background: #e3eef9;
 }
 .el-aside{
-    overflow: hidden;
+    overflow: hidden!important;
 }
 .el-menu-vertical-demo{
     width: 100%;
