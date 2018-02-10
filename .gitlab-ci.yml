@@ -1,0 +1,7 @@
+before_script:
+  - docker stop transction || true && docker rm transction || true
+
+build:
+  script:
+    - docker build -t transction .
+    - docker run --name transction  -itd  -p 8082:8082 transction:latest
