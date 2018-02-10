@@ -112,7 +112,7 @@ export default {
   left: 0;
   top: 0;
   z-index: 0;
-  background: url(/static/img/bgimg.jpg);
+  background: url(/static/bgimg.jpg);
 }
 .el-header,.login_head {
   background: #fff;
