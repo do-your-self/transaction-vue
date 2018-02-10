@@ -1,17 +1,20 @@
 <template>
   <div class="bgimg">
+    <el-row :gutter="20" class="login_head">
+      <el-col :span="14" :offset="3">投后管理系统</el-col>
+    </el-row>
     <el-row>
-      <el-col :span="6" class="login">
-        <p class="title">投后管理系统登录</p>
+      <el-col :span="5" class="login">
+        <p class="title">登录</p>
         <el-form :model="loginForm" :rules="rules" ref="loginForm" style="margin-top:20px;">
-          <el-form-item placeholder="用户名" prop="username">
-            <el-input v-model="loginForm.username"></el-input>
+          <el-form-item prop="username">
+            <el-input placeholder="用户名" v-model="loginForm.username"></el-input>
           </el-form-item>
-          <el-form-item placeholder="密码" prop="password">
-            <el-input v-model="loginForm.password" type="password" @keyup.enter.native="keyup"></el-input>
+          <el-form-item prop="password">
+            <el-input placeholder="密码" v-model="loginForm.password" type="password" @keyup.enter.native="keyup"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('loginForm')" style="width:100%;margin-top:30px;">提交</el-button>
+            <el-button type="primary" @click="submitForm('loginForm')" style="width:100%;margin-top:20px;">提交</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -111,18 +114,28 @@ export default {
   z-index: 0;
   background: url(../assets/bgimg.jpg);
 }
+.login_head {
+  background: #fff;
+  height: 60px;
+  line-height: 60px;
+  position: absolute;
+  z-index: 1;
+  width:100%;
+  font-size:20px;
+  margin:0!important;
+}
 .login {
   position: relative;
-  left: 50%;
+  left: 60%;
   margin-top: 200px;
-  background: rgba(0,0,0,.3);
-  padding: 20px 50px;
-  border-radius: 3px; 
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 4px; 
   min-height: 350px;
 }
 .title {
-  color: #fff;
-  font-size: 20px;
   text-align: center;
+  color: #000;
+  font-size: 20px;
 }
 </style>

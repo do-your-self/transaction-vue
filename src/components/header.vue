@@ -2,7 +2,7 @@
   <el-menu
   class="el-menu-demo"
   mode="horizontal"
-  background-color="#545c64"
+  background-color="#409EFF"
   text-color="#fff"
   active-text-color="#ffd04b">
     <div class="logo">投后管理系统</div>

@@ -218,7 +218,7 @@ export default {
           { required: true, message: '不允许为空和非数字类型的值', trigger: 'blur'}
         ],
         invest_date: [
-          { required: true, message: '请选择时间', trigger: 'change'}
+          { required: true, message: '请选择日期', trigger: 'change'}
         ],
         account_name: [
           { required: true, message: '不允许为空', trigger: 'blur'}
