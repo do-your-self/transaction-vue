@@ -112,9 +112,9 @@ export default {
   left: 0;
   top: 0;
   z-index: 0;
-  background: url(/static/bgimg.jpg);
+  background: url(../assets/bgimg.jpg);
 }
-.login_head {
+.el-header,.login_head {
   background: #fff;
   height: 60px;
   line-height: 60px;
