@@ -16,7 +16,10 @@ const router = new Router({
     {
       path: '/login',
       name: 'Login',
-      component: Login
+      component: Login,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/index',
@@ -28,7 +31,7 @@ const router = new Router({
           name: 'Company',
           component: Company,
           meta: {
-            requiresAuth: true
+            requiresAuth: "admin"
           }
         },
         {
@@ -36,7 +39,7 @@ const router = new Router({
           name: 'Class',
           component: Class,
           meta: {
-            requiresAuth: true
+            requiresAuth: "admin"
           }
         },
         {
@@ -44,7 +47,7 @@ const router = new Router({
           name: 'Period',
           component: Period ,
           meta: {
-            requiresAuth: true
+            requiresAuth: "admin"
           }
         },
         {
@@ -52,40 +55,35 @@ const router = new Router({
           name: 'Prod',
           component: Prod,
           meta: {
-            requiresAuth: true
+            requiresAuth: "admin"
           }
         },
         {
           path: '/transaction',
           name: 'Transaction',
-          component: Transaction
+          component: Transaction,
+          meta: {
+            requiresAuth: "user"
+          }
         }
       ]
     }
   ]
 });
 
-//注册全局钩子用来拦截导航
-// router.beforeEach((to, from, next) => {
-//   //获取store里面的token
-//   let token = store.state.token;
-//   let admin = store.state.admin;
-//   //判断要去的路由有没有requiresAuth
-//   // if (to.meta.requiresAuth) {
-//     if (to.meta.requiresAuth && token && admin == 'admin') { //admin login
-//       next();
-//     } else if (!to.meta.requiresAuth && to.meta.requiresAuth == 'user') {//普通用户
-//       next();
-//     } else {
-//       next({
-//         path: '/login',
-//         query: {redirect: to.fullPath}  // 将刚刚要去的路由path（却无权限）作为参数，方便登录成功后直接跳转到该路由
-//       });
-//     }
-//   // } else {
-//   //   next();//如果无需token,那么随它去吧
-//   // }
-// });
+// 注册全局钩子用来拦截导航
+router.beforeEach((to, from, next) => {
+  let admin = store.state.admin;
+  //判断要去的路由有没有requiresAuth
+  if (to.meta.requiresAuth == admin ||to.meta.requiresAuth === true) { 
+    next();
+  } else {
+    next({
+      path: '/login',
+      query: {redirect: to.fullPath}  
+    });
+  }
+});
 
 export default router;
 
