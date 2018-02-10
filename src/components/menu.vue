@@ -44,7 +44,7 @@
     overflow: hidden!important;
     background: #fafafa!important;
 }
-.el-menu,.el-menu-vertical-demo{
+.el-menu-vertical-demo{
     width: 100%;
     height: 100%;
     text-align: left;
