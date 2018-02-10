@@ -37,7 +37,8 @@ export default {
 
 <style >
 .el-header{
-  padding:0;
+  padding:0!important;
+  margin:0!important;
 }
 .page {
   text-align:center;

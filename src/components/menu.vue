@@ -42,12 +42,13 @@
 }
 .el-aside{
     overflow: hidden!important;
+    background: #fafafa!important;
 }
-.el-menu-vertical-demo{
+.el-menu,.el-menu-vertical-demo{
     width: 100%;
     height: 100%;
     text-align: left;
-    background: #fafafa;
+    background: #fafafa!important;
 }
 a{
     text-decoration: none;
