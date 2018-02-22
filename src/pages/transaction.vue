@@ -3,6 +3,11 @@
     <el-button size="small" @click="open">添加</el-button>
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column
+        label="序号"
+        type="index"
+        width="50">
+      </el-table-column>
+      <el-table-column
         label="合同编号">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.contract_no }}</span>
@@ -39,6 +44,12 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="预期收益率">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.return_rate }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="投资金额">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.amount }}</span>
@@ -51,6 +62,12 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="渠道">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.channel }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="分公司" width="170px">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.company }}</span>
@@ -60,12 +77,6 @@
         label="理财师">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.advisor_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="最近一次修改时间" width="170px">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.update_time }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" header-align="center" width="150px">
@@ -97,7 +108,7 @@
         </el-form-item>
         <el-form-item label="产品名称" prop="prod_id">
           <el-select filterable v-model="form.prod_id" placeholder="请选择产品名称" style="width: 100%;">
-            <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.prod_name" :value="list.id"></el-option>
+            <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="投资人姓名" prop="investor_name">
@@ -119,6 +130,7 @@
           <el-select v-model="form.investor_id_type" placeholder="请选择证件类型" style="width: 100%;">
             <el-option label="身份证" value="身份证"></el-option>
             <el-option label="营业执照" value="营业执照"></el-option>
+            <el-option label="其它" value="其它"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="证件号码" prop="investor_id">
@@ -193,7 +205,9 @@ export default {
         "phone": "",
         "address": "",
         "company_id": null,
-        "advisor_name": ""
+        "advisor_name": "",
+        "channel": "",
+        // "return_rate": ""
       },
       rules: { //验证规则
         contract_no: [
@@ -271,7 +285,7 @@ export default {
             response.data.items.forEach(function(v,k){
               prods.push({
                 id:v.id,
-                prod_name:v.prod_name
+                name:v.prod_name
               })
             });
             this.$store.dispatch('Prods', prods);
@@ -288,7 +302,7 @@ export default {
         this.loading = false;
         this.tableData = resp;
         this.currentPage =  response.data.page;
-        this.pageSize = [response.data.per_page];
+        this.pageSize = [response.data.per_page||0];
         this.total = response.data.total;
         this.pages = response.data.pages;
       }
