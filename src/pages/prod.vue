@@ -3,75 +3,62 @@
     <el-button size="small" @click="open">添加</el-button>
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column
-        label="id">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.id }}</span>
-        </template>
+        label="序号"
+        type="index"
+        width="50">
       </el-table-column>
       <el-table-column
-        label="prod名称">
+        label="产品名称">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.prod_name }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="起始募集期">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.fund_raise_date_from }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="终止募集期">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.fund_raise_date_to }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="成立日期">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.establish_date }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="认购起点(万)">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.start_point }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="递增金额(万)">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.increase_point }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="托管费率">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.custodian_fee_rate }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="财务顾问费率">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.advisor_fee_rate }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="存续期">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.surviva_period }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.survival_period_unit }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.description }}</span>
+          <span style="margin-left: 10px">{{ scope.row.surviva_period }}({{ scope.row.survival_period_unit }})</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" header-align="center" width="150px">
@@ -97,53 +84,50 @@
       :visible.sync="dialogVisible"
       width="40%">
 
-      <el-form :label-position="labelPosition" label-width="80px" :model="form">
-        <el-form-item label="名称">
-          <el-input v-model="form.name"></el-input>
+      <el-form :label-position="labelPosition" label-width="150px" :model="form" ref="form" :rules="rules">
+        <el-form-item label="产品名称" prop="prod_name">
+          <el-input v-model="form.prod_name"></el-input>
         </el-form-item>
-        <el-form-item label="时间">
+        <el-form-item label="募集期" prop="fund_raise_date_from">
           <el-col :span="11">
-            <el-date-picker type="date" placeholder="选择日期" v-model="form.fund_raise_date_from" style="width: 100%;"></el-date-picker>
+            <el-date-picker type="date" placeholder="起始募集期" v-model="form.fund_raise_date_from" style="width: 100%;"></el-date-picker>
           </el-col>
           <el-col class="line" :span="2">-</el-col>
           <el-col :span="11">
-            <el-date-picker type="date" placeholder="选择日期" v-model="form.fund_raise_date_to" style="width: 100%;"></el-date-picker>
+            <el-date-picker type="date" placeholder="终止募集期" v-model="form.fund_raise_date_to" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="时间">
-          <el-date-picker type="date" placeholder="选择日期" v-model="form.fund_raise_date_to" style="width: 100%;"></el-date-picker>
+        <el-form-item label=" 成立日期" prop="establish_date">
+          <el-date-picker type="date" placeholder="选择日期" v-model="form.establish_date" style="width: 100%;"></el-date-picker>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.start_point"></el-input>
+        <el-form-item label="认购起点(万)" prop="start_point">
+          <el-input v-model="form.start_point" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.increase_point"></el-input>
+        <el-form-item label="递增金额(万)" prop="increase_point">
+          <el-input v-model="form.increase_point" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.custodian_fee_rate"></el-input>
+        <el-form-item label="托管费率" prop="">
+          <el-input v-model="form.custodian_fee_rate" type="number" step="0.001"></el-input>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.advisor_fee_rate"></el-input>
+        <el-form-item label="财务顾问费率" prop="advisor_fee_rate" step="0.001">
+          <el-input v-model="form.advisor_fee_rate" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.settlement_fee_rate"></el-input>
+        <el-form-item label="交易结算费率" prop="settlement_fee_rate" step="0.001">
+          <el-input v-model="form.settlement_fee_rate" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.surviva_period"></el-input>
+        <el-form-item label="存续期" prop="surviva_period">
+          <el-input v-model="form.surviva_period" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="">
+        <el-form-item label=" 存续期单位(月)" prop="survival_period_unit">
           <el-input v-model="form.survival_period_unit"></el-input>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.survival_period_unit"></el-input>
-        </el-form-item>
-        <el-form-item label="description">
+        <el-form-item label="其他描述信息" prop="description">
           <el-input type="textarea" v-model="form.description"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commit">确 定</el-button>
+        <el-button type="primary" @click="commit('form')">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -174,14 +158,52 @@ export default {
         "fund_raise_date_from": '',
         "fund_raise_date_to": '',
         "establish_date": '',
-        "start_point": 0,
-        "increase_point": 0,
-        "custodian_fee_rate": 0,
-        "advisor_fee_rate": 0,
-        "settlement_fee_rate": 0,
-        "surviva_period": 0,
+        "start_point": '',
+        "increase_point": '',
+        "custodian_fee_rate": '',
+        "advisor_fee_rate": '',
+        "settlement_fee_rate": '',
+        "surviva_period": '',
         "survival_period_unit": '',
         "description": ''
+      },
+      rules: { //验证规则
+        prod_name: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        fund_raise_date_from: [
+          { required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        fund_raise_date_to: [
+          { required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        establish_date: [
+          { required: true, message: '请选择日期', trigger: 'change'}
+        ],
+        start_point: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        increase_point: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        custodian_fee_rate: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        advisor_fee_rate: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        settlement_fee_rate: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        surviva_period: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        survival_period_unit: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        description: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ]
       },
       operate:''
     }
@@ -208,46 +230,102 @@ export default {
     },
     open(index,rows) {
       if(rows){
-        this.form.name=rows.name;
-        this.form.id=rows.id;
+        this.form=rows;
         this.operate="edit"
         this.title = '编辑';
+        api.getProd(this.form.id).then((response) => {
+          if(response.statusText=="OK"){
+            this.form=response.data
+          }
+        });
 
       }else{
+        this.form={
+          "prod_name": '',
+          "fund_raise_date_from": '',
+          "fund_raise_date_to": '',
+          "establish_date": '',
+          "start_point": '',
+          "increase_point": '',
+          "custodian_fee_rate": '',
+          "advisor_fee_rate": '',
+          "settlement_fee_rate": '',
+          "surviva_period": '',
+          "survival_period_unit": '',
+          "description": ''
+        };
         this.operate="add"
         this.title = '新增'
       }
       this.dialogVisible=true;
     },
-    commit(){
-      this.dialogVisible=false;
-      if(this.operate=="edit"){
-        api.setProd(this.form.id,{"name":this.form.name}).then((response) => {
-          this.getData(response);
-          this.$message({
-            type: 'success',
-            message: '修改成功'
-          });
-        });
+    commit(formName){
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let opt = JSON.parse(JSON.stringify(this.form));
+          opt.start_point=Number(opt.start_point);
+          opt.increase_point=Number(opt.increase_point);
+          opt.custodian_fee_rate=Number(opt.custodian_fee_rate);
+          opt.advisor_fee_rate=Number(opt.advisor_fee_rate);
+          opt.settlement_fee_rate=Number(opt.settlement_fee_rate);
+          opt.surviva_period=Number(opt.surviva_period);
+          opt.establish_date=opt.establish_date.substring(0,10);
+          opt.fund_raise_date_from=opt.fund_raise_date_from.substring(0,10);
+          opt.fund_raise_date_to=opt.fund_raise_date_to.substring(0,10);
+          delete opt.min_amount;
+          delete opt.id;
+          if(this.operate=="edit"){
+            api.setProd(this.form.id,opt).then((response) => {
+              if(response.data.success){
+                this.dialogVisible=false;
+                this.getData(response);
+                this.$message({
+                  type: 'success',
+                  message: '修改成功'
+                });
+              }else{
+                this.$message({
+                  type: 'error',
+                  message: response.statusText
+                });
+              }
+            });
 
-      }else{
-        api.addProd({"name":this.form.name}).then((response) => {
-          this.getData(response);
+          }else{
+            api.addProd(opt).then((response) => {
+              if(response.data.success){
+                this.dialogVisible=false;
+                this.getData(response);
+                this.$message({
+                  type: 'success',
+                  message: '添加成功'
+                });
+              }else{
+                this.$message({
+                  type: 'error',
+                  message: response.statusText
+                });
+              }
+            });
+          }
+
+        } else {
           this.$message({
-            type: 'success',
-            message: '添加成功'
+            type: 'error',
+            message: '请按提示输入合法的值'
           });
-        });
-      }
+          return false;
+        }
+      });
     },
     remove(index,rows) {
       api.delProd(rows.id).then((response) => {
-      });
-      api.getProds(10,this.currentPage).then((response) => {
-        this.getData(response);
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        api.getProds(10,this.currentPage).then((response) => {
+          this.getData(response);
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          });
         });
       });
     },

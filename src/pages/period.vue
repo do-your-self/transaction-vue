@@ -3,42 +3,41 @@
     <el-button size="small" @click="open">添加</el-button>
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column
-        label="id">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.id }}</span>
-        </template>
+        label="序号"
+        type="index"
+        width="50">
       </el-table-column>
       <el-table-column
-        label="">
+        label="产品分期名称">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.period_name }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="产品名称">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.prod }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="当前状态">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.status }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="起息日">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.value_date }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="">
+        label="兑付日">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.payment_date }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="">
-        <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.prod_id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" label="操作" header-align="center">
+      <el-table-column fixed="right" label="操作" header-align="center" width="150px">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -60,29 +59,33 @@
       :title="title"
       :visible.sync="dialogVisible"
       width="40%">
-      <el-form :label-position="labelPosition" label-width="80px" :model="form">
-        <el-form-item label="名称">
+      <el-form :label-position="labelPosition" label-width="150px" :model="form" ref="form" :rules="rules">
+        <el-form-item label="产品分期名称" prop="period_name">
           <el-input v-model="form.period_name"></el-input>
         </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="form.status" placeholder="请选择活动区域">
-            <el-option label="一" value="shanghai"></el-option>
-            <el-option label="二" value="beijing"></el-option>
+        <el-form-item label="当前状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择活动区域" style="width: 100%;">
+            <el-option label="成立" value="成立"></el-option>
+            <el-option label="结束" value="结束"></el-option>
+            <el-option label="募集期" value="募集期"></el-option>
+            <el-option label="无效" value="无效"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="时间">
+        <el-form-item label="起息日" prop="value_date">
           <el-date-picker type="date" placeholder="选择日期" v-model="form.value_date" style="width: 100%;"></el-date-picker>
         </el-form-item>
-        <el-form-item label="时间">
+        <el-form-item label="兑付日" prop="payment_date">
           <el-date-picker type="date" placeholder="选择日期" v-model="form.payment_date" style="width: 100%;"></el-date-picker>
         </el-form-item>
-        <el-form-item label="">
-          <el-input v-model="form.prod_id"></el-input>
+        <el-form-item label="产品名称" prop="prod_id">
+          <el-select filterable v-model="form.prod_id" placeholder="请选择产品名称" style="width: 100%;">
+            <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commit">确 定</el-button>
+        <el-button type="primary" @click="commit('form')">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -113,7 +116,25 @@ export default {
         "status": '',
         "value_date": '',
         "payment_date": '',
-        "prod_id": 0
+        "prod_id": '',
+        "prod": ""
+      },
+      rules:{
+        period_name: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        status: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        value_date: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        payment_date: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ],
+        prod_id: [
+          { required: true, message: '不允许为空', trigger: 'blur'}
+        ]
       },
       operate:''
     }
@@ -123,6 +144,22 @@ export default {
   beforeCreate(){
     api.getPeriods(10,1).then((response) => {
       this.getData(response);
+    });
+    api.getProds(10,1).then((response) => {
+      if(response){
+        api.getProds(Math.round(response.data.pages*10),1).then((response) => {
+          if(response){
+            var prods=[];
+            response.data.items.forEach(function(v,k){
+              prods.push({
+                id:v.id,
+                name:v.prod_name
+              })
+            });
+            this.$store.dispatch('Prods', prods);
+          }
+        });
+      }
     });
   },
 
@@ -140,46 +177,83 @@ export default {
     },
     open(index,rows) {
       if(rows){
-        this.form.name=rows.name;
-        this.form.id=rows.id;
+        this.form=rows;
         this.operate="edit"
         this.title = '编辑';
 
       }else{
+        this.form={
+          "period_name": '',
+          "status": '',
+          "value_date": '',
+          "payment_date": '',
+          "prod_id": ''
+        };
         this.operate="add"
         this.title = '新增'
       }
       this.dialogVisible=true;
     },
-    commit(){
-      this.dialogVisible=false;
-      if(this.operate=="edit"){
-        api.setPeriod(this.form.id,{"name":this.form.name}).then((response) => {
-          this.getData(response);
-          this.$message({
-            type: 'success',
-            message: '修改成功'
-          });
-        });
+    commit(formName){
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let opt = JSON.parse(JSON.stringify(this.form));
+          delete opt.id;
+          delete opt.prod;
+          opt.value_date=opt.value_date.substring(0,10);
+          opt.payment_date=opt.payment_date.substring(0,10);
+          if(this.operate=="edit"){
+            api.setPeriod(this.form.id,opt).then((response) => {
+              if(response.data.success){
+                this.dialogVisible=false;
+                this.getData(response);
+                this.$message({
+                  type: 'success',
+                  message: '修改成功'
+                });
+              }else{
+                this.$message({
+                  type: 'error',
+                  message: response.statusText
+                });
+              }
+            });
 
-      }else{
-        api.addPeriod({"name":this.form.name}).then((response) => {
-          this.getData(response);
+          }else{
+            api.addPeriod(opt).then((response) => {
+              if(response.data.success){
+                this.dialogVisible=false;
+                this.getData(response);
+                this.$message({
+                  type: 'success',
+                  message: '添加成功'
+                });
+              }else{
+                this.$message({
+                  type: 'error',
+                  message: response.statusText
+                });
+              }
+            });
+          }
+
+        } else {
           this.$message({
-            type: 'success',
-            message: '添加成功'
+            type: 'error',
+            message: '请按提示输入合法的值'
           });
-        });
-      }
+          return false;
+        }
+      });
     },
     remove(index,rows) {
       api.delPeriod(rows.id).then((response) => {
-      });
-      api.getPeriods(10,this.currentPage).then((response) => {
-        this.getData(response);
-        this.$message({
-          type: 'success',
-          message: '删除成功'
+        api.getPeriods(10,this.currentPage).then((response) => {
+          this.getData(response);
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          });
         });
       });
     },
