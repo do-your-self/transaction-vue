@@ -29,6 +29,7 @@ const mutations = {
         window.localStorage.removeItem('user');
         state.company = null;
         window.sessionStorage.removeItem('company');
+        state.minamounts={};
     },
     [types.PERIODS]: (state, data) => {
         state.periods = data;
@@ -51,6 +52,14 @@ const mutations = {
         //把adimn存起来
         state.user = data;
         window.sessionStorage.setItem('user', data);
+    },
+    [types.MINAMOUNTS]: (state, data) => {
+        //把adimn存起来
+        state.minamounts[data.id]=data.min_amount;
+    },
+    [types.ISCOLLAPSE]: (state, data) => {
+        //把adimn存起来
+        state.isCollapse=data;
     }
 /*    //这步可有可无，根据自己需求去写
     [types.COMPANY]: (state, data) => {

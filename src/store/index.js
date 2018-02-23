@@ -19,7 +19,9 @@ const state = {
     companys: [],
     prods: [],
     periods: [],
-    claarr: []
+    claarr: [],
+    minamounts: {},
+    isCollapse: false
 };
 
 export default new Vuex.Store({

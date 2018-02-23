@@ -122,8 +122,12 @@ export default {
     return instance.put('/admin/class/' + id, data);
   },
   //transaction
-  getTransactions(per, page) {
-    return instance.get('/transaction/?page=' + page + '&per_page=' +per);
+  getTransactions(per, page, filter) {
+    if(filter){
+      return instance.get('/transaction/?page=' + page + '&per_page=' +per +filter);
+    }else{
+      return instance.get('/transaction/?page=' + page + '&per_page=' +per);
+    }
   },
   addTransaction(data) {
     return instance.post('/transaction/', data);

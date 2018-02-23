@@ -27,6 +27,12 @@ export default {
     },
     Claarr({ commit }, data){
         commit(types.ClAARR, data);
+    },
+    Minamounts({ commit }, data){
+        commit(types.MINAMOUNTS, data);
+    },
+    isCollapse({ commit }, data){
+        commit(types.ISCOLLAPSE, data);
     }
 /*    Company({ commit }, data){
         commit(types.COMPANY, data);

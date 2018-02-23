@@ -20,3 +20,7 @@ export const COMPANYS = 'COMPANYS';
 export const PRODS = 'PRODS';
 
 export const ClAARR = 'ClAARR';
+
+export const MINAMOUNTS = 'MINAMOUNTS';
+
+export const ISCOLLAPSE = 'ISCOLLAPSE';

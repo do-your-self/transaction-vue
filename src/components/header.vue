@@ -5,6 +5,7 @@
   background-color="#409EFF"
   text-color="#fff"
   active-text-color="#ffd04b">
+  <el-menu-item index="3" @click="Collapse"><i class="el-icon-menu"></i></el-menu-item>
     <div class="logo">投后管理系统</div>
   <el-menu-item index="1" style="float:right;" @click="logout">登出</el-menu-item>
   <el-menu-item index="2" style="float:right;">{{$store.state.user}}</el-menu-item>
@@ -14,7 +15,14 @@
 <script>
     import api from '../axios.js'
     export default {
+        data(){
+            return {
+            }
+        },
         methods: {
+            Collapse(){
+                this.$store.dispatch('isCollapse', !this.$store.state.isCollapse);
+            },
             logout() {
                 //清除token
                 this.$store.dispatch('UserLogout');
