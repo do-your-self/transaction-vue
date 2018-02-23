@@ -1,6 +1,32 @@
 <template>
  <div>
     <el-button size="small" @click="open">添加</el-button>
+<el-form :inline="true" :model="filter" class="demo-form-inline">
+  <el-form-item>
+    <el-select size="mini" filterable v-model="filter.company_id" placeholder="分公司" style="width: 100%;">
+      <el-option v-for="list in $store.state.companys" :key="list.id" :label="list.name" :value="list.id"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item>
+    <el-select size="mini" filterable v-model="filter.class_id" placeholder="产品名称" style="width: 100%;">
+      <el-option v-for="list in $store.state.claarr" :key="list.id" :label="list.name" :value="list.id"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item>
+    <el-select size="mini" filterable v-model="filter.prod_id" placeholder="产品分类名称" style="width: 100%;">
+      <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item>
+    <el-select size="mini" filterable v-model="filter.period_id" placeholder="产品分期名称" style="width: 100%;">
+      <el-option v-for="list in $store.state.periods" :key="list.id" :label="list.name" :value="list.id"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item>
+    <el-button size="mini" type="primary" @click="onSubmit">查询</el-button>
+  </el-form-item>
+</el-form>
+
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column
         label="序号"
@@ -100,7 +126,8 @@
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
-      width="40%">
+      width="40%"
+      :close-on-click-modal="false">
 
       <el-form :label-position="labelPosition" label-width="150px" :model="form" ref="form" :rules="rules">
         <el-form-item label="合同编号" prop="contract_no">
@@ -189,6 +216,12 @@ export default {
       pageSize: [],
       total: 0,
       listId: null,
+      filter: {
+        company_id:'',
+        class_id:'',
+        prod_id:'',
+        period_id:''
+      },
       form: {
         "contract_no": "",
         "prod_id": null,
@@ -293,9 +326,46 @@ export default {
         });
       }
     });
+    api.getPeriods(10,1).then((response) => {
+      if(response){
+        api.getPeriods(Math.round(response.data.pages*10),1).then((response) => {
+          if(response){
+            var prods=[];
+            response.data.items.forEach(function(v,k){
+              prods.push({
+                id:v.id,
+                name:v.period_name
+              })
+            });
+            this.$store.dispatch('Prods', prods);
+          }
+        });
+      }
+    });
+    api.getClasss(10,1).then((response) => {
+      if(response){
+        api.getClasss(Math.round(response.data.pages*10),1).then((response) => {
+          if(response){
+            var clas=[];
+            response.data.items.forEach(function(v,k){
+              clas.push({
+                id:v.id,
+                name:v.class_name
+              })
+            });
+            this.$store.dispatch('Clas', clas);
+          }
+        });
+      }
+    });
   },
 
   methods: {
+    onSubmit(){
+      api.getTransactions(10,1).then((response) => {
+        this.getData(response);
+      });
+    },
     getData: function(response){      //拿到返回的数据
       if(response){
         let resp = response.data.items;

@@ -82,7 +82,8 @@
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
-      width="40%">
+      width="40%"
+      :close-on-click-modal="false">
 
       <el-form :label-position="labelPosition" label-width="150px" :model="form" ref="form" :rules="rules">
         <el-form-item label="产品名称" prop="prod_name">
