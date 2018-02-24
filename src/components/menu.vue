@@ -14,6 +14,9 @@
             <router-link to="/class">
                 <el-menu-item index="4"><i class="el-icon-tickets"></i><span slot="title">产品分类信息</span></el-menu-item>
             </router-link>
+            <router-link to="/transaction">
+                <el-menu-item index="5"><i class="el-icon-tickets"></i><span slot="title">合同录入</span></el-menu-item>
+            </router-link>
         </el-menu>
         <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" style="width: 100%;" v-if="$store.state.admin=='user'" :collapse="$store.state.isCollapse">
             <router-link to="/transaction">

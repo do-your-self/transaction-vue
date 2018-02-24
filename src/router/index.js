@@ -67,7 +67,7 @@ const router = new Router({
           name: 'Transaction',
           component: Transaction,
           meta: {
-            requiresAuth: "user"
+            requiresAuth: true
           }
         }
       ]

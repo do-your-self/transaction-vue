@@ -1,10 +1,11 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="2">
-        <el-button size="small" @click="open">添加</el-button>
+      <el-col :span="4">
+        <el-button size="mini" @click="open">添加</el-button>
+        <el-button size="mini" type="primary" @click="export2Excel">导出</el-button>
       </el-col>
-      <el-col :span="22">
+      <el-col :span="20">
         <el-form :inline="true" :model="filter" class="demo-form-inline">
           <el-form-item>
             <el-select size="mini" clearable filterable v-model="filter.company_id" placeholder="分公司" style="width: 100%;">
@@ -31,8 +32,75 @@
           </el-form-item>
         </el-form>
       </el-col>
-    </el-row>
-    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+    </el-row> 
+    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" v-if="$store.state.admin=='admin'">
+      <el-table-column
+        label="序号"
+        type="index"
+        width="50">
+      </el-table-column>
+      <el-table-column
+        label="产品编号">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.contract_no }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="产品名称">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.prod }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="投资人姓名">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.investor_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="证件号码">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.investor_id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="银行卡号码">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.bank_card_no }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="投资金额">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.amount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="电话">
+        <template slot-scope="scope">
+          <span style="margin-left: 10px">{{ scope.row.phone }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" header-align="center" width="200px">
+        <template slot-scope="scope">
+          <el-button-group>
+            <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+              <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-edit" @click="open(scope.$index, scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="详细信息" placement="bottom">
+              <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-info" @click="showDetail(scope.$index, scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="上传" placement="bottom">
+              <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-upload"@click="upload(scope.$index,scope.row)"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
+              <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-delete" @click="remove(scope.$index, scope.row)"></el-button>
+            </el-tooltip>
+          </el-button-group>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-table :data="tableData" stripe style="width: 100%" v-loading="loading" v-if="$store.state.admin=='user'">
       <el-table-column
         label="序号"
         type="index"
@@ -139,7 +207,80 @@
       title="详细信息"
       :visible.sync="dialogVisible3"
       width="30%">
-      <p><strong>合同编号</strong>{{form.contract_no}}</p>
+      <el-row>
+        <el-col :span="12"><p><strong>合同编号:</strong>{{form.contract_no}}</p></el-col>
+        <el-col :span="12"><p><strong>产品名称:</strong>{{form.prod}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>产品期数:</strong>{{form.prod_period}}</p></el-col>
+        <el-col :span="12"><p><strong>认购份额类型:</strong>{{form.prod_class}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>投资人姓名:</strong>{{form.investor_name}}</p></el-col>
+        <el-col :span="12"><p><strong>投资者类型:</strong>{{form.investor_type}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>证件类型:</strong>{{form.investor_id_type}}</p></el-col>
+        <el-col :span="12"><p><strong>证件号码:</strong>{{form.investor_id}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>预期收益率:</strong>{{form.return_rate}}</p></el-col>
+        <el-col :span="12"><p><strong>投资金额:</strong>{{form.amount}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>认购日期:</strong>{{form.invest_date}}</p></el-col>
+        <el-col :span="12"><p><strong>渠道:</strong>{{form.channel}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>分公司:</strong>{{form.company}}</p></el-col>
+        <el-col :span="12"><p><strong>理财师:</strong>{{form.advisor_name}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>账户名称:</strong>{{form.account_name}}</p></el-col>
+        <el-col :span="12"><p><strong>开户行:</strong>{{form.bank_name}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>银行卡号码:</strong>{{form.bank_card_no}}</p></el-col>
+        <el-col :span="12"><p><strong>大额支付号码:</strong>{{form.paymaen_no}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>电话:</strong>{{form.phone}}</p></el-col>
+        <el-col :span="12"><p><strong>地址:</strong>{{form.address}}</p></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"><p><strong>公司名称:</strong>{{form.company}}</p></el-col>
+        <el-col :span="12"><p><strong>更新时间:</strong>{{form.update_time}}</p></el-col>
+      </el-row>
+      <p><strong>上传文件列表</strong></p><a target="_blank" :href="hre" download="w3logo">dsf</a>
+       <iframe id="ifile" style="display:none" :src="hre"></iframe>
+<!--       <p v-for="list in form.files">{{list.name}}{{list.upload_time}}{{list.upload_user}}</p> -->
+      <el-table
+        :data="form.files"
+        style="width: 100%">
+        <el-table-column
+          prop="name"
+          label="文件名">
+        </el-table-column>
+        <el-table-column
+          prop="upload_time"
+          label="上传日期"
+          width="180">
+        </el-table-column>
+        <el-table-column
+          prop="upload_user"
+          label="上传人">
+        </el-table-column>
+        <el-table-column
+          label="操作">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="download(scope.$index, scope.row)">下载</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+<!--       <p><strong>合同编号</strong>{{form.contract_no}}</p>
       <p><strong>产品名称</strong>{{form.prod}}</p>
       <p><strong>产品期数</strong>{{form.prod_period}}</p>
       <p><strong>认购份额类型</strong>{{form.prod_class}}</p>
@@ -160,7 +301,7 @@
       <p><strong>电话</strong>{{form.phone}}</p>
       <p><strong>地址</strong>{{form.address}}</p>
       <p><strong>公司名称</strong>{{form.company}}</p>
-      <p><strong>更新时间</strong>{{form.update_time}}</p>
+      <p><strong>更新时间</strong>{{form.update_time}}</p> -->
 <!--       <p><strong></strong>{{form.}}</p>
       <p><strong></strong>{{form.}}</p>
       <p><strong></strong>{{form.}}</p> -->
@@ -285,6 +426,8 @@ export default {
 
     };
     return {
+      hre:'',
+      list:[],
       minamount:'',
       labelPosition: 'right',
       loading: true,
@@ -292,13 +435,11 @@ export default {
       dialogVisible: false,
       dialogVisible2: false,
       dialogVisible3: false,
-      fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       title: '',
       currentPage: 1,
       pages: 0,
       pageSize: [],
       total: 0,
-      listId: null,
       filter: {
         company_id:'',
         class_id:'',
@@ -483,6 +624,34 @@ export default {
   },
 
   methods: {
+    download(index,rows){
+      console.log(index,rows)
+
+      api.downfile(rows.id).then((response) => {
+        this.hre=response+'?token='+this.$store.state.token
+        console.log(response)
+window.open(response,'_blank')
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
+    },
+    export2Excel() {
+      api.download().then((response) => {
+        this.list=response.data;
+        response.data.forEach(function(v,k){
+          v['index']=k+1;
+        })
+        require.ensure([], () => {
+          const { export_json_to_excel } = require('../vendor/Export2Excel');
+          const tHeader = ['序号','合同编号','产品名称','投资人姓名','投资者类型','证件类型','证件号码','认购份额类型','收益率','期限（月）','投资金额','认购日期','账户名称','开户行名称','银行卡号','大额支付行号','联系方式','通信地址','渠道','分公司','理财师'];
+          const filterVal = ["index","contract_no","prod","investor_name","investor_type","investor_id_type","investor_id","prod_class","return_rate","survival_period","amount","invest_date","account_name","bank_name","bank_card_no","paymaen_no","phone","address","channel","company","advisor_name"];
+          const list = this.list;
+          const data = this.formatJson(filterVal, list);
+          export_json_to_excel(tHeader, data, '下载');
+        })
+      });
+    },
     upload(index,rows){
       this.dialogVisible2 = true;
       this.files.id=rows.id;
@@ -497,6 +666,9 @@ export default {
           api.getTransaction(this.files.id).then((response) => {
             if(response.statusText=="OK"){
               this.files.list=response.data.files
+              api.getTransactions(10,this.currentPage).then((response) => {
+                this.getData(response);
+              });
             }
           });
           this.$message({
@@ -728,6 +900,9 @@ export default {
 </script>
 
 <style scoped>
+p{
+  margin:5px!important;
+}
 /*
 .page {
   text-align:center;

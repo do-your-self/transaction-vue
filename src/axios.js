@@ -34,7 +34,16 @@ instance.interceptors.request.use(
 //respone拦截器
 instance.interceptors.response.use(
   response => {
-    return response;
+    console.log(response)
+    // 处理excel文件
+    if (response.headers && (response.headers['content-type'] === 'application/octet-stream' || response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+      // downloadUrl(response.request.responseURL)
+      console.log("res")
+      // window.open(response.request.responseURL)
+      return response.request.responseURL
+    }else{
+      return response;
+    }
   },
   error => { //默认除了2XX之外的都是错误的，就会走这里
     if (error.response) {
@@ -50,6 +59,34 @@ instance.interceptors.response.use(
     return error.response
   }
 );
+function download(url)
+{
+   //下载文件的地址
+   document.getElementById("ifile").src=url;
+}
+// download url
+// const downloadUrl = url => {
+//   let iframe = document.createElement('iframe')
+//   iframe.style.display = 'none'
+//   iframe.src = url
+//   iframe.onload = function () {
+//     document.body.removeChild(iframe)
+//   }
+//   document.body.appendChild(iframe)
+// }
+// Add a response interceptor
+// axios.interceptors.response.use(res => {
+//   // 处理excel文件
+//   if (res.headers && (res.headers['content-type'] === 'application/octet-stream' || res.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+//     downloadUrl(res.request.responseURL)
+//     return
+//   }
+//   ...
+// }, error => {
+//   // Do something with response error
+//   return Promise.reject(error.response.data || error.message)
+// })
+
 
 export default {
 
@@ -146,6 +183,12 @@ export default {
   },
   delFile(id){
     return instance.delete('/transaction/file/' + id)
+  },
+  download(){
+    return instance.get('/transaction/download/')
+  },
+  downfile(id){
+    return instance.get('/transaction/file/' + id)
   }
 
 }
