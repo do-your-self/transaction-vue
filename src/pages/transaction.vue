@@ -206,7 +206,7 @@
     <el-dialog
       title="详细信息"
       :visible.sync="dialogVisible3"
-      width="30%">
+      width="40%">
       <el-row>
         <el-col :span="12"><p><strong>合同编号:</strong>{{form.contract_no}}</p></el-col>
         <el-col :span="12"><p><strong>产品名称:</strong>{{form.prod}}</p></el-col>
@@ -251,9 +251,7 @@
         <el-col :span="12"><p><strong>公司名称:</strong>{{form.company}}</p></el-col>
         <el-col :span="12"><p><strong>更新时间:</strong>{{form.update_time}}</p></el-col>
       </el-row>
-      <p><strong>上传文件列表</strong></p><a target="_blank" :href="hre" download="w3logo">dsf</a>
-       <iframe id="ifile" style="display:none" :src="hre"></iframe>
-<!--       <p v-for="list in form.files">{{list.name}}{{list.upload_time}}{{list.upload_user}}</p> -->
+      <p><strong>上传文件列表</strong></p>
       <el-table
         :data="form.files"
         style="width: 100%">
@@ -280,31 +278,6 @@
           </template>
         </el-table-column>
       </el-table>
-<!--       <p><strong>合同编号</strong>{{form.contract_no}}</p>
-      <p><strong>产品名称</strong>{{form.prod}}</p>
-      <p><strong>产品期数</strong>{{form.prod_period}}</p>
-      <p><strong>认购份额类型</strong>{{form.prod_class}}</p>
-      <p><strong>投资人姓名</strong>{{form.investor_name}}</p>
-      <p><strong>投资者类型</strong>{{form.investor_type}}</p>
-      <p><strong>证件类型</strong>{{form.investor_id_type}}</p>
-      <p><strong>证件号码</strong>{{form.investor_id}}</p>
-      <p><strong>预期收益率</strong>{{form.return_rate}}</p>
-      <p><strong>投资金额</strong>{{form.amount}}</p>
-      <p><strong>认购日期</strong>{{form.invest_date}}</p>
-      <p><strong>渠道</strong>{{form.channel}}</p>
-      <p><strong>分公司</strong>{{form.company}}</p>
-      <p><strong>理财师</strong>{{form.advisor_name}}</p>
-      <p><strong>账户名称</strong>{{form.account_name}}</p>
-      <p><strong>开户行</strong>{{form.bank_name}}</p>
-      <p><strong>银行卡号码</strong>{{form.bank_card_no}}</p>
-      <p><strong>大额支付号码</strong>{{form.paymaen_no}}</p>
-      <p><strong>电话</strong>{{form.phone}}</p>
-      <p><strong>地址</strong>{{form.address}}</p>
-      <p><strong>公司名称</strong>{{form.company}}</p>
-      <p><strong>更新时间</strong>{{form.update_time}}</p> -->
-<!--       <p><strong></strong>{{form.}}</p>
-      <p><strong></strong>{{form.}}</p>
-      <p><strong></strong>{{form.}}</p> -->
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible3 = false">确 定</el-button>
       </span>
@@ -354,8 +327,8 @@
             <el-radio label="机构"></el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="投资金额" prop="amount" :placeholer="minamount">
-          <el-input v-model="form.amount" type="number">
+        <el-form-item label="投资金额" prop="amount">
+          <el-input v-model="form.amount" type="number" :placeholder="minamount">
             <template slot="append">万</template>
           </el-input>
         </el-form-item>  
@@ -625,12 +598,10 @@ export default {
 
   methods: {
     download(index,rows){
-      console.log(index,rows)
-
       api.downfile(rows.id).then((response) => {
         this.hre=response+'?token='+this.$store.state.token
-        console.log(response)
-window.open(response,'_blank')
+        // console.log(response)
+        // window.open(response,'_blank')
       })
     },
     formatJson(filterVal, jsonData) {
@@ -699,13 +670,13 @@ window.open(response,'_blank')
       return this.$confirm(`确定移除 ${ file.name }？`);
     },
     getAmount(){
-      let id=this.form.prod_id;
-      if(this.$store.state.minamounts['prod'+id]){
-        this.minamount='投资金额不能小于'+this.$store.state.minamounts['prod'+id]+'万';
-      }else if(this.$store.state.minamounts['prod'+id]==0){
+      let id='prod'+this.form.prod_id;
+      if(this.$store.state.minamounts[id]){
+        this.minamount='投资金额不能小于'+this.$store.state.minamounts[id]+'万';
+      }else if(this.$store.state.minamounts[id]==0){
         this.minamount='';
       }else{
-        api.getProd(id).then((response) => {
+        api.getProd(this.form.prod_id).then((response) => {
           if(response.data.min_amount){
             this.minamount='投资金额不能小于'+response.data.min_amount+'万';
             this.$store.dispatch('Minamounts', {id:id,min_amount:response.data.min_amount});
@@ -715,14 +686,6 @@ window.open(response,'_blank')
           }
         });
       }
-      console.log(this.$store.state.minamounts)
-      console.log(id)
-      console.log(this.$store.state.minamounts['prod'+id])
-      // console.log(this.$store.state.minamounts[id])
-      // console.log(this.$store.state.minamounts.id)
-      // console.log(this.$store.state.minamounts[2])
-      // console.log(this.$store.state.minamounts["2"])
-      console.log(this.minamount)
     },
     showDetail(index,rows) {
       this.dialogVisible3=true;
@@ -903,9 +866,4 @@ window.open(response,'_blank')
 p{
   margin:5px!important;
 }
-/*
-.page {
-  text-align:center;
-  margin-top:20px;
-}*/
 </style>

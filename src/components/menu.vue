@@ -12,7 +12,7 @@
                 <el-menu-item index="3"><i class="el-icon-rank"></i><span slot="title">产品分期信息</span></el-menu-item>
             </router-link>
             <router-link to="/class">
-                <el-menu-item index="4"><i class="el-icon-tickets"></i><span slot="title">产品分类信息</span></el-menu-item>
+                <el-menu-item index="4"><i class="el-icon-document"></i><span slot="title">产品分类信息</span></el-menu-item>
             </router-link>
             <router-link to="/transaction">
                 <el-menu-item index="5"><i class="el-icon-tickets"></i><span slot="title">合同录入</span></el-menu-item>

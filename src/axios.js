@@ -34,11 +34,9 @@ instance.interceptors.request.use(
 //respone拦截器
 instance.interceptors.response.use(
   response => {
-    console.log(response)
     // 处理excel文件
     if (response.headers && (response.headers['content-type'] === 'application/octet-stream' || response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
       // downloadUrl(response.request.responseURL)
-      console.log("res")
       // window.open(response.request.responseURL)
       return response.request.responseURL
     }else{
@@ -59,11 +57,7 @@ instance.interceptors.response.use(
     return error.response
   }
 );
-function download(url)
-{
-   //下载文件的地址
-   document.getElementById("ifile").src=url;
-}
+
 // download url
 // const downloadUrl = url => {
 //   let iframe = document.createElement('iframe')
