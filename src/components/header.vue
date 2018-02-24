@@ -45,6 +45,9 @@
 
 
 <style scope>
+    .el-icon-menu{
+        color: #fff!important;
+    }
     .logo{
         float: left;
         width:250px;

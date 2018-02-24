@@ -55,7 +55,7 @@ const mutations = {
     },
     [types.MINAMOUNTS]: (state, data) => {
         //把adimn存起来
-        state.minamounts[data.id]=data.min_amount;
+        state.minamounts['prod'+data.id]=data.min_amount;
     },
     [types.ISCOLLAPSE]: (state, data) => {
         //把adimn存起来

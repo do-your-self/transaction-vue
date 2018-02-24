@@ -1,37 +1,37 @@
 <template>
- <div>
- <el-row>
-  <el-col :span="2">
-    <el-button size="small" @click="open">添加</el-button>
-  </el-col>
-  <el-col :span="22">
-    <el-form :inline="true" :model="filter" class="demo-form-inline">
-      <el-form-item>
-        <el-select size="mini" clearable filterable v-model="filter.company_id" placeholder="分公司" style="width: 100%;">
-          <el-option v-for="list in $store.state.companys" :key="list.id" :label="list.name" :value="list.id"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select size="mini" clearable filterable v-model="filter.class_id" placeholder="产品名称" style="width: 100%;">
-          <el-option v-for="list in $store.state.claarr" :key="list.id" :label="list.name" :value="list.id"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select size="mini" clearable filterable v-model="filter.prod_id" placeholder="产品分类名称" style="width: 100%;">
-          <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select size="mini" clearable filterable v-model="filter.period_id" placeholder="产品分期名称" style="width: 100%;">
-          <el-option v-for="list in $store.state.periods" :key="list.id" :label="list.name" :value="list.id"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button size="mini" type="primary" @click="onSearch">查询</el-button>
-      </el-form-item>
-    </el-form>
-  </el-col>
-</el-row>
+  <div>
+    <el-row>
+      <el-col :span="2">
+        <el-button size="small" @click="open">添加</el-button>
+      </el-col>
+      <el-col :span="22">
+        <el-form :inline="true" :model="filter" class="demo-form-inline">
+          <el-form-item>
+            <el-select size="mini" clearable filterable v-model="filter.company_id" placeholder="分公司" style="width: 100%;">
+              <el-option v-for="list in $store.state.companys" :key="list.id" :label="list.name" :value="list.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-select size="mini" clearable filterable v-model="filter.class_id" placeholder="产品名称" style="width: 100%;">
+              <el-option v-for="list in $store.state.claarr" :key="list.id" :label="list.name" :value="list.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-select size="mini" clearable filterable v-model="filter.prod_id" placeholder="产品分类名称" style="width: 100%;">
+              <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-select size="mini" clearable filterable v-model="filter.period_id" placeholder="产品分期名称" style="width: 100%;">
+              <el-option v-for="list in $store.state.periods" :key="list.id" :label="list.name" :value="list.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button size="mini" type="primary" @click="onSearch">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column
         label="序号"
@@ -120,7 +120,7 @@
               <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-info" @click="showDetail(scope.$index, scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="上传" placement="bottom">
-              <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-upload"@click="dialogVisible2 = true"></el-button>
+              <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-upload"@click="upload(scope.$index,scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
               <el-button :disabled="!scope.row.can_edit" size="mini" type="primary" icon="el-icon-delete" @click="remove(scope.$index, scope.row)"></el-button>
@@ -169,25 +169,22 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="提示"
+      title="上传"
       :visible.sync="dialogVisible2"
       width="30%">
       <el-upload
+        name="upload_file"
         class="upload-demo"
-        action="https://jsonplaceholder.typicode.com/posts/"
-        :on-preview="handlePreview"
+        action=""
+        :before-upload="beforeUpload"
         :on-remove="handleRemove"
         :before-remove="beforeRemove"
-        multiple
-        :limit="3"
-        :on-exceed="handleExceed"
-        :file-list="fileList">
+        :file-list="files.list">
         <el-button size="small" type="primary">点击上传</el-button>
         <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
       </el-upload>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible2 = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible2 = false">确 定</el-button>
+        <el-button type="primary" @click="dialogVisible2 = false">关闭</el-button>
       </span>
     </el-dialog>
 
@@ -295,7 +292,7 @@ export default {
       dialogVisible: false,
       dialogVisible2: false,
       dialogVisible3: false,
-      fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+      fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       title: '',
       currentPage: 1,
       pages: 0,
@@ -307,6 +304,10 @@ export default {
         class_id:'',
         prod_id:'',
         period_id:''
+      },
+      files: {
+        id:'',
+        list: []
       },
       form: {
         "contract_no": "",
@@ -482,11 +483,54 @@ export default {
   },
 
   methods: {
+    upload(index,rows){
+      this.dialogVisible2 = true;
+      this.files.id=rows.id;
+      this.files.list=rows.files;
+    },
+    beforeUpload (file) {
+      let fd = new FormData()
+      fd.append('upload_file', file)
+      fd.append('transaction_pk', this.files.id)
+      api.upLoad(fd).then((response) => {
+        if(response.data.success){
+          api.getTransaction(this.files.id).then((response) => {
+            if(response.statusText=="OK"){
+              this.files.list=response.data.files
+            }
+          });
+          this.$message({
+            type: 'success',
+            message: '上传成功'
+          });
+        }
+      })
+      return;
+    },
+    handleRemove(file, fileList) {
+      api.delFile(file.id).then((response) => {
+        if(response.data.success){
+          // api.getTransaction(this.files.id).then((response) => {
+          //   if(response.statusText=="OK"){
+          //     // this.files.list=response.data.files
+          //   }
+          // });
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          });
+
+        }
+      })
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${ file.name }？`);
+    },
     getAmount(){
       let id=this.form.prod_id;
-      if(this.$store.state.minamounts.id){
-        this.minamount='投资金额不能小于'+this.$store.state.minamounts.id+'万';
-      }else if(this.$store.state.minamounts.id==0){
+      if(this.$store.state.minamounts['prod'+id]){
+        this.minamount='投资金额不能小于'+this.$store.state.minamounts['prod'+id]+'万';
+      }else if(this.$store.state.minamounts['prod'+id]==0){
         this.minamount='';
       }else{
         api.getProd(id).then((response) => {
@@ -501,28 +545,16 @@ export default {
       }
       console.log(this.$store.state.minamounts)
       console.log(id)
-      console.log(this.$store.state.minamounts['"'+id+'"'])
-      console.log(this.$store.state.minamounts[id])
-      console.log(this.$store.state.minamounts.id)
-      console.log(this.$store.state.minamounts[2])
-      console.log(this.$store.state.minamounts["2"])
+      console.log(this.$store.state.minamounts['prod'+id])
+      // console.log(this.$store.state.minamounts[id])
+      // console.log(this.$store.state.minamounts.id)
+      // console.log(this.$store.state.minamounts[2])
+      // console.log(this.$store.state.minamounts["2"])
       console.log(this.minamount)
     },
     showDetail(index,rows) {
       this.dialogVisible3=true;
       this.form=rows;
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
     },
     onSearch(){
       let filter='';

@@ -140,7 +140,12 @@ export default {
   },
   setTransaction(id,data) {
     return instance.put('/transaction/' + id, data);
+  },
+  upLoad(data){
+    return instance.post('/transaction/upload/',data)
+  },
+  delFile(id){
+    return instance.delete('/transaction/file/' + id)
   }
-
 
 }
