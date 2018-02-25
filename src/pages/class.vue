@@ -65,19 +65,19 @@
         <el-form-item label="产品分类名称" prop="class_name">
           <el-input v-model="form.class_name"></el-input>
         </el-form-item>
-        <el-form-item label="起始募集期" prop="class_name">
-          <el-input v-model="form.amount_from" type="number"></el-input>
-        </el-form-item>
-        <el-form-item label="终止募集期" prop="amount_to">
-          <el-input v-model="form.amount_to" type="number"></el-input>
-        </el-form-item>
-        <el-form-item label="回报率" prop="return_rate">
-          <el-input v-model="form.return_rate" type="number" step="0.001"></el-input>
-        </el-form-item>
         <el-form-item label="产品" prop="prod_id">
           <el-select filterable v-model="form.prod_id" placeholder="请选择产品名称" style="width: 100%;">
             <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="起始认购金额" prop="amount_from">
+          <el-input v-model="form.amount_from" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="终止认购金额" prop="amount_to">
+          <el-input v-model="form.amount_to" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="回报率" prop="return_rate">
+          <el-input v-model="form.return_rate" type="number" step="0.001"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -96,6 +96,17 @@ import api from '../axios.js'
 export default {
   name: 'Class',
   data () {
+    var vaildateNumber=(rule,value,callback)=>{
+      if(!value&&value!=0){
+        return callback(new Error('不能为空'))
+      }
+      if (!Number.isInteger(Number(value))) {
+        callback(new Error('请输入整数'));
+      } else {
+        callback();
+      }
+
+    };
     return {
       labelPosition: 'right',
       loading: true,
@@ -120,10 +131,10 @@ export default {
           { required: true, message: '请选择产品名称', trigger: 'change'}
         ],
         amount_from: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
+          { required: true, validator: vaildateNumber, trigger: 'blur'}
         ],
         amount_to: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
+          { required: true, validator: vaildateNumber, trigger: 'blur'}
         ],
         return_rate: [
           { required: true, message: '不允许为空', trigger: 'blur'}

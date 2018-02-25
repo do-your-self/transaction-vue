@@ -232,8 +232,8 @@
         <el-col :span="12"><p><strong>渠道:</strong>{{form.channel}}</p></el-col>
       </el-row>
       <el-row>
-        <el-col :span="12"><p><strong>分公司:</strong>{{form.company}}</p></el-col>
         <el-col :span="12"><p><strong>理财师:</strong>{{form.advisor_name}}</p></el-col>
+        <el-col :span="12"><p><strong>分公司:</strong>{{form.company}}</p></el-col>
       </el-row>
       <el-row>
         <el-col :span="12"><p><strong>账户名称:</strong>{{form.account_name}}</p></el-col>
@@ -384,7 +384,7 @@
 <script>
 
 import api from '../axios.js'
-
+import downloadjs from 'downloadjs'
 export default {
   name: 'Transaction',
   data () {
@@ -444,8 +444,7 @@ export default {
         "address": "",
         "company_id": null,
         "advisor_name": "",
-        "channel": "",
-        // "return_rate": ""
+        "channel": ""
       },
       rules: { //验证规则
         contract_no: [
@@ -601,14 +600,84 @@ export default {
   },
 
   methods: {
+   DownloadJS:function (blob, filename, mimetype)
+    {
+        if (!blob) {
+            throw {
+                name: 'Argument Null Exception',
+                nameof: 'blob',
+                description: 'The supplied variable is null'
+            }
+        }
+
+        if (!filename) {
+            throw {
+                name: 'Argument Null Exception',
+                nameof: 'filename',
+                description: 'The supplied variable is null'
+            }
+        }
+
+        if (!mimetype) {
+            throw {
+                name: 'Argument Null Exception',
+                nameof: 'mime',
+                description: 'The supplied variable is null'
+            }
+        }
+
+        if (!Array.isArray(blob)) {
+            throw {
+                name: 'Type Error',
+                nameof: 'blob',
+                description: 'Supplied data is not an array'
+            }
+        }
+
+        // Without the parameter '\ufeff' the charset is changed after blob generation
+        // however it does not work in IE11, so wrap it in a try catch
+        // '\ufeff' is the UTF-8 BOM
+
+        var objectBlob;
+
+        try{
+            objectBlob = new Blob(['\ufeff', blob], { type: mimetype });
+        } catch (e)
+        {
+            var bb = new window.MSBlobBuilder();
+            bb.append(['\ufeff']);
+            bb.append(blob);
+            objectBlob = bb.getBlob();
+        }
+        
+
+        if (!navigator.msSaveOrOpenBlob) {
+            var objUrl = URL.createObjectURL(objectBlob);
+
+            var a = document.createElement('a');
+            a.download = filename;
+            a.href = objUrl;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            /*In linux the link download element was removed too soon. this way would help.
+             * For now this is the better approach I think.
+             * */
+            setTimeout(function ()
+            {
+                a.remove();
+                a = undefined;
+                URL.revokeObjectURL(objUrl);
+                return;
+            }, 100)
+        } else {
+            navigator.msSaveOrOpenBlob(objectBlob, filename);
+            return;
+        }
+    },
     download(index,rows){    
-/*      return Vue.axios.get(`api/excel_sheet`, {
-        responseType: 'blob',
-      }).then(response => {
-      FileSaver.saveAs(response.data, 'Export2.xlsx')
-};*/
       api.downfile(rows.id).then((response) => {
-        window.open(response,'_blank')
+        this.DownloadJS(response, rows.name, "application/octet-stream");
       })
     },
     formatJson(filterVal, jsonData) {

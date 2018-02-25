@@ -3,7 +3,7 @@
     <el-aside :class="[$store.state.isCollapse?'w70':'w250']">
         <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" style="width: 100%;" v-if="$store.state.admin=='admin'" :collapse="$store.state.isCollapse">
             <router-link to="/company">
-                <el-menu-item index="1"><i class="el-icon-menu"></i><span slot="title">公司</span></el-menu-item>
+                <el-menu-item index="1"><i class="el-icon-setting"></i><span slot="title">公司</span></el-menu-item>
             </router-link>
             <router-link to="/prod">
                 <el-menu-item index="2"><i class="el-icon-star-on"></i><span slot="title">产品信息</span></el-menu-item>
@@ -44,12 +44,12 @@
 </script>
 
 <style>
-    .w70{
-        width:69px!important;
-    }
-    .w250{
-        width:250px!important;
-    }
+.w70{
+    width:69px!important;
+}
+.w250{
+    width:250px!important;
+}
   .el-menu-vertical-demo:not(.el-menu--collapse) {
 /*    width: 200px;
     min-height: 400px;*/

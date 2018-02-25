@@ -64,6 +64,11 @@
         <el-form-item label="产品分期名称" prop="period_name">
           <el-input v-model="form.period_name"></el-input>
         </el-form-item>
+        <el-form-item label="产品名称" prop="prod_id">
+          <el-select filterable v-model="form.prod_id" placeholder="请选择产品名称" style="width: 100%;">
+            <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="当前状态" prop="status">
           <el-select v-model="form.status" placeholder="请选择活动区域" style="width: 100%;">
             <el-option label="成立" value="成立"></el-option>
@@ -72,16 +77,11 @@
             <el-option label="无效" value="无效"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="起息日" prop="value_date">
+        <el-form-item label="起息日">
           <el-date-picker type="date" placeholder="选择日期" v-model="form.value_date" style="width: 100%;"></el-date-picker>
         </el-form-item>
-        <el-form-item label="兑付日" prop="payment_date">
+        <el-form-item label="兑付日">
           <el-date-picker type="date" placeholder="选择日期" v-model="form.payment_date" style="width: 100%;"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="产品名称" prop="prod_id">
-          <el-select filterable v-model="form.prod_id" placeholder="请选择产品名称" style="width: 100%;">
-            <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
-          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -125,12 +125,6 @@ export default {
           { required: true, message: '不允许为空', trigger: 'blur'}
         ],
         status: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
-        ],
-        value_date: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
-        ],
-        payment_date: [
           { required: true, message: '不允许为空', trigger: 'blur'}
         ],
         prod_id: [
@@ -200,8 +194,8 @@ export default {
           let opt = JSON.parse(JSON.stringify(this.form));
           delete opt.id;
           delete opt.prod;
-          opt.value_date=opt.value_date.substring(0,10);
-          opt.payment_date=opt.payment_date.substring(0,10);
+          opt.value_date=opt.value_date?opt.value_date.substring(0,10):null;
+          opt.payment_date=opt.payment_date?opt.payment_date.substring(0,10):null;
           if(this.operate=="edit"){
             api.setPeriod(this.form.id,opt).then((response) => {
               if(response.data.success){

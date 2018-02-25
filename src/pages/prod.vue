@@ -32,13 +32,13 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="认购起点(万)">
+        label="认购起点(元)">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.start_point }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="递增金额(万)">
+        label="递增金额(元)">
         <template slot-scope="scope">
           <span style="margin-left: 10px">{{ scope.row.increase_point }}</span>
         </template>
@@ -58,7 +58,7 @@
       <el-table-column
         label="存续期">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.surviva_period }}({{ scope.row.survival_period_unit }})</span>
+          <span style="margin-left: 10px">{{ scope.row.survival_period }}({{ scope.row.survival_period_unit }})</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" header-align="center" width="150px">
@@ -89,7 +89,24 @@
         <el-form-item label="产品名称" prop="prod_name">
           <el-input v-model="form.prod_name"></el-input>
         </el-form-item>
-        <el-form-item label="募集期" prop="fund_raise_date_from">
+        <el-form-item label="成立日期" prop="establish_date">
+          <el-date-picker type="date" placeholder="选择日期" v-model="form.establish_date" style="width: 100%;"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="认购起点" prop="start_point">
+          <el-input v-model="form.start_point" type="number"><template slot="append">元</template></el-input>
+        </el-form-item>
+        <el-form-item label="递增金额" prop="increase_point">
+          <el-input v-model="form.increase_point" type="number"><template slot="append">元</template></el-input>
+        </el-form-item>
+        <el-form-item label="存续期" prop="survival_period">
+          <el-input placeholder="请输存续期" v-model="form.survival_period" class="input-with-select" type="number">
+            <el-select v-model="form.survival_period_unit" slot="append" placeholder="单位">
+              <el-option label="月" value="月"></el-option>
+              <el-option label="天" value="天"></el-option>
+            </el-select>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="募集期">
           <el-col :span="11">
             <el-date-picker type="date" placeholder="起始募集期" v-model="form.fund_raise_date_from" style="width: 100%;"></el-date-picker>
           </el-col>
@@ -98,29 +115,14 @@
             <el-date-picker type="date" placeholder="终止募集期" v-model="form.fund_raise_date_to" style="width: 100%;"></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label=" 成立日期" prop="establish_date">
-          <el-date-picker type="date" placeholder="选择日期" v-model="form.establish_date" style="width: 100%;"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="认购起点(万)" prop="start_point">
-          <el-input v-model="form.start_point" type="number"></el-input>
-        </el-form-item>
-        <el-form-item label="递增金额(万)" prop="increase_point">
-          <el-input v-model="form.increase_point" type="number"></el-input>
-        </el-form-item>
-        <el-form-item label="托管费率" prop="">
+        <el-form-item label="托管费率">
           <el-input v-model="form.custodian_fee_rate" type="number" step="0.001"></el-input>
         </el-form-item>
-        <el-form-item label="财务顾问费率" prop="advisor_fee_rate" step="0.001">
+        <el-form-item label="财务顾问费率" step="0.001">
           <el-input v-model="form.advisor_fee_rate" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="交易结算费率" prop="settlement_fee_rate" step="0.001">
+        <el-form-item label="交易结算费率" step="0.001">
           <el-input v-model="form.settlement_fee_rate" type="number"></el-input>
-        </el-form-item>
-        <el-form-item label="存续期" prop="surviva_period">
-          <el-input v-model="form.surviva_period" type="number"></el-input>
-        </el-form-item>
-        <el-form-item label=" 存续期单位(月)" prop="survival_period_unit">
-          <el-input v-model="form.survival_period_unit"></el-input>
         </el-form-item>
         <el-form-item label="其他描述信息" prop="description">
           <el-input type="textarea" v-model="form.description"></el-input>
@@ -142,6 +144,17 @@ import api from '../axios.js'
 export default {
   name: 'Prod',
   data () {
+    var vaildateNumber=(rule,value,callback)=>{
+      if(!value&&value!=0){
+        return callback(new Error('不能为空'))
+      }
+      if (!Number.isInteger(Number(value))) {
+        callback(new Error('请输入整数'));
+      } else {
+        callback();
+      }
+
+    };
     return {
       labelPosition: 'right',
       loading: true,
@@ -164,46 +177,28 @@ export default {
         "custodian_fee_rate": '',
         "advisor_fee_rate": '',
         "settlement_fee_rate": '',
-        "surviva_period": '',
-        "survival_period_unit": '',
+        "survival_period": '',
+        "survival_period_unit": '月',
         "description": ''
       },
       rules: { //验证规则
         prod_name: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
-        ],
-        fund_raise_date_from: [
-          { required: true, message: '请选择日期', trigger: 'change'}
-        ],
-        fund_raise_date_to: [
-          { required: true, message: '请选择日期', trigger: 'change'}
+          { required: true, message: '不允许为空', trigger: 'change'}
         ],
         establish_date: [
           { required: true, message: '请选择日期', trigger: 'change'}
         ],
         start_point: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
+          { required: true, validator: vaildateNumber, trigger: 'change'}
         ],
         increase_point: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
+          { required: true, validator: vaildateNumber, trigger: 'change'}
         ],
-        custodian_fee_rate: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
-        ],
-        advisor_fee_rate: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
-        ],
-        settlement_fee_rate: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
-        ],
-        surviva_period: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
+        survival_period: [
+          { required: true, message: '不允许为空', trigger: 'change'}
         ],
         survival_period_unit: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
-        ],
-        description: [
-          { required: true, message: '不允许为空', trigger: 'blur'}
+          { required: true, message: '不允许为空', trigger: 'change'}
         ]
       },
       operate:''
@@ -250,8 +245,8 @@ export default {
           "custodian_fee_rate": '',
           "advisor_fee_rate": '',
           "settlement_fee_rate": '',
-          "surviva_period": '',
-          "survival_period_unit": '',
+          "survival_period": '',
+          "survival_period_unit": '月',
           "description": ''
         };
         this.operate="add"
@@ -265,13 +260,13 @@ export default {
           let opt = JSON.parse(JSON.stringify(this.form));
           opt.start_point=Number(opt.start_point);
           opt.increase_point=Number(opt.increase_point);
-          opt.custodian_fee_rate=Number(opt.custodian_fee_rate);
-          opt.advisor_fee_rate=Number(opt.advisor_fee_rate);
-          opt.settlement_fee_rate=Number(opt.settlement_fee_rate);
-          opt.surviva_period=Number(opt.surviva_period);
+          opt.custodian_fee_rate=opt.custodian_fee_rate?Number(opt.custodian_fee_rate):null;
+          opt.advisor_fee_rate=opt.advisor_fee_rate?Number(opt.advisor_fee_rate):null;
+          opt.settlement_fee_rate=opt.settlement_fee_rate?Number(opt.settlement_fee_rate):null;
+          opt.survival_period=Number(opt.survival_period);
           opt.establish_date=opt.establish_date.substring(0,10);
-          opt.fund_raise_date_from=opt.fund_raise_date_from.substring(0,10);
-          opt.fund_raise_date_to=opt.fund_raise_date_to.substring(0,10);
+          opt.fund_raise_date_from=opt.fund_raise_date_from?opt.fund_raise_date_from.substring(0,10):null;
+          opt.fund_raise_date_to=opt.fund_raise_date_to?opt.fund_raise_date_to.substring(0,10):null;
           delete opt.min_amount;
           delete opt.id;
           if(this.operate=="edit"){
@@ -347,5 +342,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+  .el-select {
+    width: 100px;
+  }
 </style>

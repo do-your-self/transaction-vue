@@ -36,8 +36,6 @@ instance.interceptors.response.use(
   response => {
     // 处理excel文件
     if (response.headers && (response.headers['content-type'] === 'application/octet-stream' || response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-      // downloadUrl(response.request.responseURL)
-      // window.open(response.request.responseURL)
       return response.request.responseURL
     }else{
       return response;
