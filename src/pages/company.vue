@@ -26,7 +26,7 @@
       </el-table-column>
     </el-table>
     <div class="page">
-      <el-pagination @current-change="handleCurrentChange" layout="total, sizes, prev, pager, next, jumper"
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" layout="total, sizes, prev, pager, next, jumper"
         :page-sizes="pageSize"
         :total="total">
       </el-pagination>
@@ -66,7 +66,7 @@ export default {
       title: '',
       currentPage: 1,
       pages: 0,
-      pageSize: [],
+      pageSize: [10,20,50],
       total: 0,
       listId: null,
       form: {
@@ -96,7 +96,6 @@ export default {
         this.loading = false;
         this.tableData = resp;
         this.currentPage =  response.data.page;
-        this.pageSize = [response.data.per_page];
         this.total = response.data.total;
         this.pages = response.data.pages;
       }
@@ -105,14 +104,14 @@ export default {
       if(rows){
         this.form=rows;
         this.operate="edit"
-        this.title = '编辑';
+        this.title = '编辑分公司信息';
 
       }else{
         this.form={
           "name": ""
         }
         this.operate="add"
-        this.title = '新增'
+        this.title = '新增分公司信息'
       }
       this.dialogVisible=true;
     },
@@ -178,6 +177,12 @@ export default {
     handleCurrentChange(val) {
       this.loading=true;
       api.getCompanys(10,val).then((response) => {
+        this.getData(response);
+      });
+    },
+    handleSizeChange(val) {
+      this.loading=true;
+      api.getTransactions(val,1).then((response) => {
         this.getData(response);
       });
     }

@@ -150,7 +150,7 @@ export default {
       title: '',
       currentPage: 1,
       pages: 0,
-      pageSize: [],
+      pageSize: [10,20,50],
       total: 0,
       listId: null,
       form: {
@@ -224,7 +224,6 @@ export default {
         this.loading = false;
         this.tableData = resp;
         this.currentPage =  response.data.page;
-        this.pageSize = [response.data.per_page];
         this.total = response.data.total;
         this.pages = response.data.pages;
       }
@@ -233,7 +232,7 @@ export default {
       if(rows){
         this.form=rows;
         this.operate="edit"
-        this.title = '编辑';
+        this.title = '编辑产品信息';
         api.getProd(this.form.id).then((response) => {
           if(response.statusText=="OK"){
             this.form=response.data
@@ -256,7 +255,7 @@ export default {
           "description": ''
         };
         this.operate="add"
-        this.title = '新增'
+        this.title = '录入产品信息'
       }
       this.dialogVisible=true;
     },
@@ -333,6 +332,12 @@ export default {
     handleCurrentChange(val) {
       this.loading=true;
       api.getProds(10,val).then((response) => {
+        this.getData(response);
+      });
+    },
+    handleSizeChange(val) {
+      this.loading=true;
+      api.getTransactions(val,1).then((response) => {
         this.getData(response);
       });
     }

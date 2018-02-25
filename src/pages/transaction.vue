@@ -13,13 +13,13 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select size="mini" clearable filterable v-model="filter.class_id" placeholder="产品名称" style="width: 100%;">
-              <el-option v-for="list in $store.state.claarr" :key="list.id" :label="list.name" :value="list.id"></el-option>
+            <el-select size="mini" clearable filterable v-model="filter.prod_id" placeholder="产品名称" style="width: 100%;">
+              <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select size="mini" clearable filterable v-model="filter.prod_id" placeholder="产品分类名称" style="width: 100%;">
-              <el-option v-for="list in $store.state.prods" :key="list.id" :label="list.name" :value="list.id"></el-option>
+            <el-select size="mini" clearable filterable v-model="filter.class_id" placeholder="产品分类名称" style="width: 100%;">
+              <el-option v-for="list in $store.state.claarr" :key="list.id" :label="list.name" :value="list.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -37,7 +37,7 @@
       <el-table-column
         label="序号"
         type="index"
-        width="50">
+        width="70">
       </el-table-column>
       <el-table-column
         label="产品编号">
@@ -198,7 +198,7 @@
       </el-table-column>
     </el-table>
     <div class="page">
-      <el-pagination @current-change="handleCurrentChange" layout="total, sizes, prev, pager, next, jumper"
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" layout="total, sizes, prev, pager, next, jumper"
         :page-sizes="pageSize"
         :total="total">
       </el-pagination>
@@ -295,7 +295,7 @@
         :before-remove="beforeRemove"
         :file-list="files.list">
         <el-button size="small" type="primary">点击上传</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
       </el-upload>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible2 = false">关闭</el-button>
@@ -307,6 +307,7 @@
       :title="title"
       :visible.sync="dialogVisible"
       width="40%"
+      :fullscreen="true"
       :close-on-click-modal="false">
 
       <el-form :label-position="labelPosition" label-width="150px" :model="form" ref="form" :rules="rules">
@@ -329,7 +330,7 @@
         </el-form-item>
         <el-form-item label="投资金额" prop="amount">
           <el-input v-model="form.amount" type="number" :placeholder="minamount">
-            <template slot="append">万</template>
+            <template slot="append">元</template>
           </el-input>
         </el-form-item>  
         <el-form-item label="认购日期" prop="invest_date">
@@ -392,16 +393,19 @@ export default {
         return callback(new Error('不能为空'))
       }
       if (!Number.isInteger(Number(value))) {
-        callback(new Error('请输入整数'));
-      } else {
+        return callback(new Error('请输入整数'));
+      } 
+      if (value < this.min){
+        callback(new Error('投资金额不能小于'+this.min+'万'));
+      }else {
         callback();
       }
 
     };
     return {
-      hre:'',
       list:[],
       minamount:'',
+      min:'',
       labelPosition: 'right',
       loading: true,
       tableData: [],
@@ -411,7 +415,7 @@ export default {
       title: '',
       currentPage: 1,
       pages: 0,
-      pageSize: [],
+      pageSize: [10,20,50],
       total: 0,
       filter: {
         company_id:'',
@@ -597,11 +601,14 @@ export default {
   },
 
   methods: {
-    download(index,rows){
+    download(index,rows){    
+/*      return Vue.axios.get(`api/excel_sheet`, {
+        responseType: 'blob',
+      }).then(response => {
+      FileSaver.saveAs(response.data, 'Export2.xlsx')
+};*/
       api.downfile(rows.id).then((response) => {
-        this.hre=response+'?token='+this.$store.state.token
-        // console.log(response)
-        // window.open(response,'_blank')
+        window.open(response,'_blank')
       })
     },
     formatJson(filterVal, jsonData) {
@@ -673,15 +680,19 @@ export default {
       let id='prod'+this.form.prod_id;
       if(this.$store.state.minamounts[id]){
         this.minamount='投资金额不能小于'+this.$store.state.minamounts[id]+'万';
+        this.min=this.$store.state.minamounts[id];
       }else if(this.$store.state.minamounts[id]==0){
         this.minamount='';
+        this.min=0;
       }else{
         api.getProd(this.form.prod_id).then((response) => {
           if(response.data.min_amount){
             this.minamount='投资金额不能小于'+response.data.min_amount+'万';
+            this.min=response.data.min_amount;
             this.$store.dispatch('Minamounts', {id:id,min_amount:response.data.min_amount});
           }else{
             this.minamount='';
+            this.min=0;
             this.$store.dispatch('Minamounts', {id:id,min_amount:0});
           }
         });
@@ -708,7 +719,6 @@ export default {
         this.loading = false;
         this.tableData = resp;
         this.currentPage =  response.data.page;
-        this.pageSize = [response.data.per_page||0];
         this.total = response.data.total;
         this.pages = response.data.pages;
       }
@@ -717,7 +727,7 @@ export default {
       if(rows){
         this.form=rows;
         this.operate="edit"
-        this.title = '编辑(录入合同信息)';
+        this.title = '编辑合同信息';
         api.getTransaction(this.form.id).then((response) => {
           if(response.statusText=="OK"){
             this.form=response.data
@@ -744,7 +754,7 @@ export default {
           "advisor_name": ""
         };
         this.operate="add"
-        this.title = '新增(录入合同信息)'
+        this.title = '录入合同信息'
       }
       this.dialogVisible=true;
     },
@@ -853,6 +863,12 @@ export default {
     handleCurrentChange(val) {
       this.loading=true;
       api.getTransactions(10,val).then((response) => {
+        this.getData(response);
+      });
+    },
+    handleSizeChange(val) {
+      this.loading=true;
+      api.getTransactions(val,1).then((response) => {
         this.getData(response);
       });
     }
