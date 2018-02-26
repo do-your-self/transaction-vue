@@ -50,6 +50,9 @@
 .w250{
     width:250px!important;
 }
+.el-menu{
+    border-right:0px!important;
+}
   .el-menu-vertical-demo:not(.el-menu--collapse) {
 /*    width: 200px;
     min-height: 400px;*/
