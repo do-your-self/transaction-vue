@@ -283,14 +283,18 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="上传"
+      title="上传文件"
       :visible.sync="dialogVisible2"
       width="30%">
       <el-upload
         name="upload_file"
         class="upload-demo"
-        action=""
+        :headers="headers"
+        :action="url"
+        :data="upLoadData"
         :before-upload="beforeUpload"
+        :on-success="handleSuccess"
+        :on-error="handleError"
         :on-remove="handleRemove"
         :before-remove="beforeRemove"
         :file-list="files.list">
@@ -403,6 +407,17 @@ export default {
 
     };
     return {
+      headers: {
+        Authorization: this.$store.state.token,
+        post:{
+          'Content-Type':'application/json;charset=UTF-8'
+        }
+      },
+      url:'http://10.0.5.115:5002/api/transaction/upload/',
+      upLoadData:{
+        upload_file:'',
+        transaction_pk:''
+      },
       list:[],
       minamount:'',
       min:'',
@@ -627,38 +642,36 @@ export default {
     upload(index,rows){
       this.dialogVisible2 = true;
       this.files.id=rows.id;
+      this.upLoadData.transaction_pk=rows.id;
       this.files.list=rows.files;
     },
     beforeUpload (file) {
-      let fd = new FormData()
-      fd.append('upload_file', file)
-      fd.append('transaction_pk', this.files.id)
-      api.upLoad(fd).then((response) => {
-        if(response.data.success){
-          api.getTransaction(this.files.id).then((response) => {
-            if(response.statusText=="OK"){
-              this.files.list=response.data.files
-              api.getTransactions(10,this.currentPage).then((response) => {
-                this.getData(response);
-              });
-            }
-          });
-          this.$message({
-            type: 'success',
-            message: '上传成功'
+      this.upLoadData.upload_file=file;
+    },
+    handleSuccess(file, fileList) {
+      this.$message({
+        type: 'success',
+        message: '上传成功'
+      });
+      api.getTransaction(this.files.id).then((response) => {
+        if(response.statusText=="OK"){
+          this.files.list=response.data.files
+          api.getTransactions(10,this.currentPage).then((response) => {
+            this.getData(response);
           });
         }
-      })
-      return;
+      });
+    },
+    handleError(file, fileList) {
+      this.$message({
+        type: 'error',
+        message: '上传失败'
+      });
     },
     handleRemove(file, fileList) {
       api.delFile(file.id).then((response) => {
         if(response.data.success){
-          // api.getTransaction(this.files.id).then((response) => {
-          //   if(response.statusText=="OK"){
-          //     // this.files.list=response.data.files
-          //   }
-          // });
+          this.files.list=fileList;
           this.$message({
             type: 'success',
             message: '删除成功'
@@ -693,6 +706,7 @@ export default {
       }
     },
     showDetail(index,rows) {
+      rows.files=this.files.list;
       this.dialogVisible3=true;
       this.form=rows;
     },
